@@ -1,49 +1,47 @@
-<x-user-layout title="Riwayat Perjalanan" subtitle="Semua Perjalanan">
-
-    <h2 style="font-family:'Syne',sans-serif; font-size:20px; font-weight:800; margin-bottom:20px">
-        Riwayat Perjalanan
-    </h2>
+<x-user-layout title="Riwayat Perjalanan">
 
     <div class="card">
+        <div class="card-header">
+            <div class="card-title">📋 Riwayat Perjalanan ({{ $orders->count() }})</div>
+        </div>
+
+        @if($orders->isEmpty())
+            <div class="empty-state" style="padding:48px">
+                <div class="empty-state-icon">📋</div>
+                <div style="margin-bottom:12px">Belum ada riwayat perjalanan</div>
+                <a href="{{ route('user.bus') }}" class="btn btn-primary">🚌 Mulai Perjalanan</a>
+            </div>
+        @else
         <div class="table-wrap">
             <table>
                 <thead>
                     <tr>
-                        <th>#Kode</th>
-                        <th>Bus</th>
-                        <th>Rute</th>
-                        <th>Tgl Perjalanan</th>
+                        <th>Kode</th>
+                        <th>Bus / Rute</th>
+                        <th>Tanggal Berangkat</th>
+                        <th>Kursi</th>
                         <th>Total</th>
                         <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($orders as $order)
+                    @foreach($orders as $order)
                     <tr>
+                        <td><code style="color:var(--accent);font-size:12px">{{ $order->kode_order }}</code></td>
                         <td>
-                            <span style="font-family:'Syne',sans-serif; font-weight:700; color:var(--accent)">
-                                {{ $order->kode_order }}
-                            </span>
+                            <div style="font-size:13px;font-weight:600">{{ $order->bus?->nama }}</div>
+                            <div style="font-size:12px;color:var(--text3)">{{ $order->bus?->asal }} → {{ $order->bus?->tujuan }}</div>
                         </td>
-                        <td style="font-weight:600; font-size:13px">{{ $order->bus->nama }}</td>
-                        <td style="font-size:13px">{{ $order->bus->asal }} → {{ $order->bus->tujuan }}</td>
                         <td style="font-size:13px">{{ $order->tanggal_berangkat->format('d M Y') }}</td>
-                        <td style="font-weight:700; color:var(--green)">{{ $order->total_format }}</td>
-                        <td>
-                            <span class="badge {{ $order->status_class }}">{{ $order->status_label }}</span>
-                        </td>
+                        <td style="font-size:13px;text-align:center">{{ $order->jumlah_kursi }}</td>
+                        <td style="font-weight:700;color:var(--green);font-size:13px">{{ $order->total_format }}</td>
+                        <td><span class="badge badge-{{ $order->status_class }}">{{ $order->status_label }}</span></td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" style="text-align:center; padding:48px; color:var(--text3)">
-                            <div style="font-size:32px; margin-bottom:8px">🛣️</div>
-                            Belum ada riwayat perjalanan.
-                        </td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
+        @endif
     </div>
 
 </x-user-layout>

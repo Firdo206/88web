@@ -23,7 +23,7 @@ class DashboardController extends Controller
     public function busIndex(Request $request)
     {
         $buses = Bus::where('status', 'Aktif')
-            ->when($request->asal,   fn ($q) => $q->where('asal', $request->asal))
+            ->when($request->asal,   fn ($q) => $q->where('asal',   $request->asal))
             ->when($request->tujuan, fn ($q) => $q->where('tujuan', $request->tujuan))
             ->latest()
             ->get();
@@ -31,7 +31,8 @@ class DashboardController extends Controller
         $kotaList = Bus::where('status', 'Aktif')
             ->selectRaw('DISTINCT asal as kota')->pluck('kota')
             ->merge(
-                Bus::where('status', 'Aktif')->selectRaw('DISTINCT tujuan as kota')->pluck('kota')
+                Bus::where('status', 'Aktif')
+                    ->selectRaw('DISTINCT tujuan as kota')->pluck('kota')
             )
             ->unique()->sort()->values();
 
@@ -60,10 +61,10 @@ class DashboardController extends Controller
         ]);
 
         return redirect()->route('user.pesanan')
-            ->with('success', "Tiket berhasil dipesan! ID: {$order->kode_order}. Menunggu konfirmasi admin.");
+            ->with('success', 'Tiket berhasil dipesan! Kode: ' . $order->kode_order . '. Menunggu konfirmasi admin.');
     }
 
-    public function pesanan(Request $request)
+    public function pesanan()
     {
         $orders = Order::with('bus')
             ->where('user_id', auth()->id())

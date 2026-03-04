@@ -8,18 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Bus extends Model
 {
     protected $fillable = [
-        'nama',
-        'plat',
-        'asal',
-        'tujuan',
-        'jam_berangkat',
-        'harga',
-        'kapasitas',
-        'tipe',
-        'fasilitas',
-        'deskripsi',
-        'promo',
-        'status',
+        'nama', 'plat', 'asal', 'tujuan', 'jam_berangkat',
+        'harga', 'kapasitas', 'tipe', 'fasilitas',
+        'deskripsi', 'promo', 'status',
     ];
 
     public function orders(): HasMany
@@ -27,7 +18,6 @@ class Bus extends Model
         return $this->hasMany(Order::class);
     }
 
-    // Accessor: emoji berdasarkan tipe bus
     public function getEmojiAttribute(): string
     {
         return match ($this->tipe) {
@@ -38,7 +28,6 @@ class Bus extends Model
         };
     }
 
-    // Accessor: format harga rupiah
     public function getHargaFormatAttribute(): string
     {
         return 'Rp ' . number_format($this->harga, 0, ',', '.');

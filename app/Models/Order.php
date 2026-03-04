@@ -8,17 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Order extends Model
 {
     protected $fillable = [
-        'kode_order',
-        'bus_id',
-        'user_id',
-        'nama_penumpang',
-        'telepon',
-        'tanggal_berangkat',
-        'jumlah_kursi',
-        'total_harga',
-        'status',
-        'catatan',
-        'confirmed_at',
+        'kode_order', 'bus_id', 'user_id',
+        'nama_penumpang', 'telepon',
+        'tanggal_berangkat', 'jumlah_kursi',
+        'total_harga', 'status', 'catatan', 'confirmed_at',
     ];
 
     protected $casts = [
@@ -36,13 +29,11 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Accessor: format total harga
     public function getTotalFormatAttribute(): string
     {
         return 'Rp ' . number_format($this->total_harga, 0, ',', '.');
     }
 
-    // Accessor: label status dalam bahasa Indonesia
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
@@ -54,7 +45,6 @@ class Order extends Model
         };
     }
 
-    // Accessor: CSS class badge untuk status
     public function getStatusClassAttribute(): string
     {
         return match ($this->status) {
@@ -66,7 +56,6 @@ class Order extends Model
         };
     }
 
-    // Auto-generate kode_order saat membuat order baru
     protected static function booted(): void
     {
         static::creating(function (Order $order) {

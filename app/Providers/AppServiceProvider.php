@@ -14,9 +14,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Daftarkan Blade anonymous components
-        Blade::component('components.styles',     'styles');
-        Blade::component('layouts.admin',          'admin-layout');
-        Blade::component('layouts.user',           'user-layout');
+        Blade::component('components.styles',  'styles');
+        Blade::component('layouts.admin',      'admin-layout');
+        Blade::component('layouts.user',       'user-layout');
     }
 }

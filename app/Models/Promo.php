@@ -7,12 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Promo extends Model
 {
     protected $fillable = [
-        'nama',
-        'kode',
-        'diskon',
-        'berlaku_hingga',
-        'deskripsi',
-        'status',
+        'nama', 'kode', 'diskon',
+        'berlaku_hingga', 'deskripsi', 'status',
     ];
 
     protected $casts = [

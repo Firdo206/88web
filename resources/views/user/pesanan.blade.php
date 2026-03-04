@@ -1,83 +1,50 @@
-<x-user-layout title="Pesanan Saya" subtitle="Tiket Saya">
+<x-user-layout title="Pesanan Saya">
 
-    <h2 style="font-family:'Syne',sans-serif; font-size:20px; font-weight:800; margin-bottom:20px">
-        Pesanan Saya
-    </h2>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">🎫 Pesanan Saya ({{ $orders->count() }})</div>
+            <a href="{{ route('user.bus') }}" class="btn btn-primary btn-sm">+ Pesan Tiket</a>
+        </div>
 
-    {{-- Tab Filter --}}
-    <div class="tabs">
-        @foreach([
-            'all'       => 'Semua',
-            'pending'   => 'Menunggu',
-            'confirmed' => 'Dikonfirmasi',
-            'completed' => 'Selesai',
-            'cancelled' => 'Dibatalkan',
-        ] as $val => $label)
-        <a href="{{ route('user.pesanan', ['status' => $val]) }}"
-           class="tab {{ request('status', 'all') === $val ? 'active' : '' }}">
-            {{ $label }}
-        </a>
-        @endforeach
+        @if($orders->isEmpty())
+            <div class="empty-state" style="padding:48px">
+                <div class="empty-state-icon">🎫</div>
+                <div style="margin-bottom:12px">Belum ada pesanan</div>
+                <a href="{{ route('user.bus') }}" class="btn btn-primary">🚌 Cari Bus Sekarang</a>
+            </div>
+        @else
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kode</th>
+                        <th>Bus / Rute</th>
+                        <th>Tanggal</th>
+                        <th>Kursi</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Dipesan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($orders as $order)
+                    <tr>
+                        <td><code style="color:var(--accent);font-size:12px">{{ $order->kode_order }}</code></td>
+                        <td>
+                            <div style="font-size:13px;font-weight:600">{{ $order->bus?->nama }}</div>
+                            <div style="font-size:12px;color:var(--text3)">{{ $order->bus?->asal }} → {{ $order->bus?->tujuan }}</div>
+                        </td>
+                        <td style="font-size:13px">{{ $order->tanggal_berangkat->format('d M Y') }}</td>
+                        <td style="font-size:13px;text-align:center">{{ $order->jumlah_kursi }}</td>
+                        <td style="font-weight:700;color:var(--green);font-size:13px">{{ $order->total_format }}</td>
+                        <td><span class="badge badge-{{ $order->status_class }}">{{ $order->status_label }}</span></td>
+                        <td style="font-size:12px;color:var(--text3)">{{ $order->created_at->format('d M Y') }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
     </div>
-
-    {{-- Filter in controller via query string --}}
-    @php
-        $currentStatus = request('status', 'all');
-        $filtered = $currentStatus === 'all'
-            ? $orders
-            : $orders->where('status', $currentStatus);
-    @endphp
-
-    @if($filtered->isEmpty())
-        <div class="empty-state">
-            <div class="empty-state-icon">🎫</div>
-            <p>Belum ada pesanan di kategori ini.</p>
-            <a href="{{ route('user.bus') }}" class="btn btn-primary" style="margin-top:16px">
-                Pesan Sekarang
-            </a>
-        </div>
-    @else
-        @foreach($filtered as $order)
-        <div class="card mb-4">
-            <div class="card-header">
-                <div>
-                    <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:15px">
-                        {{ $order->bus->nama }}
-                    </div>
-                    <div style="font-size:13px; color:var(--text2); margin-top:2px">
-                        📍 {{ $order->bus->asal }} → {{ $order->bus->tujuan }}
-                        &nbsp;|&nbsp;
-                        📅 {{ $order->tanggal_berangkat->format('d M Y') }}
-                    </div>
-                </div>
-                <div style="display:flex; align-items:center; gap:10px">
-                    <span class="badge {{ $order->status_class }}">{{ $order->status_label }}</span>
-                    <span style="font-family:'Syne',sans-serif; font-weight:800; color:var(--green)">
-                        {{ $order->total_format }}
-                    </span>
-                </div>
-            </div>
-            <div class="card-body"
-                 style="padding:14px 22px; display:flex; align-items:center; justify-content:space-between">
-                <div style="font-size:13px; color:var(--text2)">
-                    ID: <strong style="color:var(--accent)">{{ $order->kode_order }}</strong>
-                    &nbsp;|&nbsp; {{ $order->jumlah_kursi }} kursi
-                    &nbsp;|&nbsp; Dipesan: {{ $order->created_at->format('d M Y, H:i') }}
-                </div>
-                <div style="font-size:13px">
-                    @if($order->status === 'pending')
-                        <span style="color:var(--yellow)">⏳ Menunggu konfirmasi admin</span>
-                    @elseif($order->status === 'confirmed')
-                        <span style="color:var(--green)">✅ Tiket sudah dikonfirmasi</span>
-                    @elseif($order->status === 'completed')
-                        <span style="color:var(--blue)">🏁 Perjalanan selesai</span>
-                    @elseif($order->status === 'cancelled')
-                        <span style="color:var(--red)">❌ Pesanan dibatalkan</span>
-                    @endif
-                </div>
-            </div>
-        </div>
-        @endforeach
-    @endif
 
 </x-user-layout>

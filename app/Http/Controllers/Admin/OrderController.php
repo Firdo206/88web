@@ -10,13 +10,11 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $status = $request->get('status', 'all');
-
-        $orders = Order::with(['bus', 'user'])
+        $status       = $request->get('status', 'all');
+        $orders       = Order::with(['bus', 'user'])
             ->when($status !== 'all', fn ($q) => $q->where('status', $status))
             ->latest()
             ->get();
-
         $pendingCount = Order::where('status', 'pending')->count();
 
         return view('admin.orders.index', compact('orders', 'status', 'pendingCount'));
@@ -25,7 +23,6 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load(['bus', 'user']);
-
         return view('admin.orders.show', compact('order'));
     }
 
@@ -46,7 +43,7 @@ class OrderController extends Controller
 
     public function cancel(Order $order)
     {
-        if (! in_array($order->status, ['pending', 'confirmed'])) {
+        if (!in_array($order->status, ['pending', 'confirmed'])) {
             return back()->with('error', 'Pesanan ini tidak dapat dibatalkan.');
         }
 
