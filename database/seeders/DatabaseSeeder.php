@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Bus;
 use App\Models\Promo;
@@ -12,23 +13,27 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Admin
-        User::create([
-            'name'     => 'Admin BusGo',
-            'email'    => 'admin@busgo.id',
-            'password' => Hash::make('password'),
-            'role'     => 'admin',
-        ]);
+        // ── Admin ──
+        User::updateOrCreate(
+            ['email' => 'admin@busgo.id'],
+            [
+                'name'     => 'Admin BusGo',
+                'password' => Hash::make('password'),
+                'role'     => 'admin',
+            ]
+        );
 
-        // User biasa
-        User::create([
-            'name'     => 'Budi Santoso',
-            'email'    => 'budi@email.com',
-            'password' => Hash::make('password'),
-            'role'     => 'user',
-        ]);
+        // ── User biasa ──
+        User::updateOrCreate(
+            ['email' => 'budi@email.com'],
+            [
+                'name'     => 'Budi Santoso',
+                'password' => Hash::make('password'),
+                'role'     => 'user',
+            ]
+        );
 
-        // Bus
+        // ── Bus ──
         $buses = [
             [
                 'nama'          => 'Sinar Jaya Eksekutif',
@@ -41,7 +46,7 @@ class DatabaseSeeder extends Seeder
                 'tipe'          => 'Eksekutif',
                 'fasilitas'     => 'AC, WiFi, Toilet, Snack',
                 'deskripsi'     => 'Bus eksekutif nyaman dengan kursi reclining 2-2.',
-                'promo'         => 'HEMAT15%',
+                'promo'         => 'HEMAT15',
                 'status'        => 'Aktif',
             ],
             [
@@ -69,7 +74,7 @@ class DatabaseSeeder extends Seeder
                 'tipe'          => 'Sleeper',
                 'fasilitas'     => 'AC, Sleeper Bed, Makan, WiFi, TV',
                 'deskripsi'     => 'Bus sleeper mewah untuk perjalanan malam.',
-                'promo'         => 'MALAM30%',
+                'promo'         => 'MALAM30',
                 'status'        => 'Aktif',
             ],
             [
@@ -86,29 +91,72 @@ class DatabaseSeeder extends Seeder
                 'promo'         => null,
                 'status'        => 'Aktif',
             ],
+            [
+                'nama'          => 'Trans Jawa Mulia',
+                'plat'          => 'W 7890 TJ',
+                'asal'          => 'Surabaya',
+                'tujuan'        => 'Yogyakarta',
+                'jam_berangkat' => '06:00',
+                'harga'         => 175000,
+                'kapasitas'     => 38,
+                'tipe'          => 'Super Eksekutif',
+                'fasilitas'     => 'AC, WiFi, Toilet, Makan, USB Charger',
+                'deskripsi'     => 'Super Eksekutif non-stop Surabaya-Yogyakarta.',
+                'promo'         => 'SUPER20',
+                'status'        => 'Aktif',
+            ],
         ];
 
         foreach ($buses as $bus) {
-            Bus::create($bus);
+            Bus::firstOrCreate(['nama' => $bus['nama'], 'plat' => $bus['plat']], $bus);
         }
 
-        // Promo
-        Promo::create([
-            'nama'           => 'Flash Sale Akhir Tahun',
-            'kode'           => 'AKHIRTAHUN',
-            'diskon'         => 30,
-            'berlaku_hingga' => '2026-12-31',
-            'deskripsi'      => 'Diskon spesial akhir tahun untuk semua rute!',
-            'status'         => 'Aktif',
-        ]);
+        // ── Promo ──
+        $promos = [
+            [
+                'nama'           => 'Hemat Akhir Pekan',
+                'kode'           => 'HEMAT15',
+                'diskon'         => 15,
+                'berlaku_hingga' => '2026-12-31',
+                'deskripsi'      => 'Diskon 15% untuk semua rute setiap akhir pekan.',
+                'status'         => 'Aktif',
+            ],
+            [
+                'nama'           => 'Promo Malam',
+                'kode'           => 'MALAM30',
+                'diskon'         => 30,
+                'berlaku_hingga' => '2026-12-31',
+                'deskripsi'      => 'Hemat 30% untuk bus berangkat pukul 20:00 ke atas.',
+                'status'         => 'Aktif',
+            ],
+            [
+                'nama'           => 'Super Eksekutif Spesial',
+                'kode'           => 'SUPER20',
+                'diskon'         => 20,
+                'berlaku_hingga' => '2026-09-30',
+                'deskripsi'      => 'Diskon 20% khusus armada Super Eksekutif.',
+                'status'         => 'Aktif',
+            ],
+            [
+                'nama'           => 'Flash Sale Lebaran',
+                'kode'           => 'LEBARAN26',
+                'diskon'         => 25,
+                'berlaku_hingga' => '2026-04-10',
+                'deskripsi'      => 'Sambut mudik Lebaran dengan harga spesial!',
+                'status'         => 'Aktif',
+            ],
+            [
+                'nama'           => 'New Member',
+                'kode'           => 'NEWMEMBER',
+                'diskon'         => 10,
+                'berlaku_hingga' => '2026-12-31',
+                'deskripsi'      => 'Diskon 10% untuk member baru BusGo.',
+                'status'         => 'Aktif',
+            ],
+        ];
 
-        Promo::create([
-            'nama'           => 'Promo Lebaran',
-            'kode'           => 'LEBARAN26',
-            'diskon'         => 15,
-            'berlaku_hingga' => '2026-04-10',
-            'deskripsi'      => 'Sambut mudik dengan harga spesial.',
-            'status'         => 'Aktif',
-        ]);
+        foreach ($promos as $promo) {
+            Promo::firstOrCreate(['kode' => $promo['kode']], $promo);
+        }
     }
 }
